@@ -11,30 +11,33 @@
 
 <body>
     <nav class="nav-bar">
-        <p>POS</p>
-        <li><a href="/pages/add.html"><i class="ri-home-4-line"></i>Dashboard</a></li>
-        <li><a href="{{url_for('product_list')}}" id="text"><i class="ri-align-justify"></i>Category</a></li>
-        <li><a href="" id="text1"><i class="ri-book-2-line"></i>Sale Proccess</a></li>
-        <li><a href=""><i class="ri-search-line"></i>Receipt</a></li>
-        <li><a href=""><i class="ri-functions"></i>Add Product</a></li>
+           <div class="navs">
+            <img src="/img/mian-pos.png" alt="">
+            <p>Sinat Store</p>
+        </div>
+        <li><a href="/"><i class="ri-home-4-line"></i>Dashboard</a></li>
+        <li><a href="{{ url_for('product_list') }}" id="text"><i class="ri-align-justify"></i>Category</a></li>
+        <li><a href="" id="text1"><i class="ri-book-2-line"></i>Sale Process</a></li>
+        <li><a href="{{ url_for('create_receipt') }}"><i class="ri-search-line"></i>Receipt</a></li>
+        <li><a href="{{ url_for('add_product') }}"><i class="ri-functions"></i>Add Product</a></li>
     </nav>
     <section>
         <div class="box" >
-            <p>PRODUCT (OUT SF STOCK)</p>
+            <p>PRODUCT (OUT OF STOCK)</p>
             <h3>Item:1<i class="ri-store-3-line"></i></h3>
 
         </div>
         <div class="box">
-            <p class="style" style="color: gainsboro;">GATEGORY (COUNT)</p>
+            <p class="style" style="color:black;">CATEGORY (COUNT)</p>
             <h3>Item:3<i class="ri-list-unordered"></i></h3>
         </div>
 
         <div class="box">
-            <p class="style1" style="color: rgb(23, 182, 158);">OYMENT TYPE</p>
+            <p class="style1" style="color:black;">PAYMENT TYPE</p>
             <h3>Item:2<i class="ri-visa-line"></i></h3>
         </div>
         <div class="box">
-            <p class="style2" style="color: white;">ADMIN ACCOUNT</p>
+            <p class="style2" style="color:black;">ADMIN ACCOUNT</p>
             <h3>Item:3<i class="ri-account-box-line"></i></h3>
         </div>
         <div class="box">
@@ -42,16 +45,16 @@
             <h3>0<i class="ri-message-3-line"></i></i></h3>
         </div>
         <div class="box">
-            <p class="style" style="color: gainsboro;">TOTAL(SALE)</p>
+            <p class="style" style="color: black;">TOTAL(SALE)</p>
             <h3>55600<i class="ri-exchange-dollar-fill"></i></h3>
         </div>
 
         <div class="box">
-            <p class="style1" style="color: rgb(23, 182, 158);">REQUEST SUCCESS</p>
+            <p class="style1" style="color: black;">REQUEST SUCCESS</p>
             <h3>0<i class="ri-verified-badge-line"></i></h3>
         </div>
         <div class="box">
-            <p class="style2" style="color: white;">CUSTOMER ACCOUNT</p>
+            <p class="style2" style="color:black;">CUSTOMER ACCOUNT</p>
             <h3>2<i class="ri-group-line"></i></h3>
         </div>
 

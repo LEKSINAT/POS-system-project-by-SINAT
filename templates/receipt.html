@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Receipt</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.7.0/fonts/remixicon.css" rel="stylesheet" />
+    <style>
+        /* General Styles */
+        body {
+            background-color: #f5f5f5;
+        }
+
+        /* Receipt Container */
+        .receipt-container {
+            max-width: 80mm; /* Standard thermal receipt width */
+            margin: 20px 10px 20px 10px;
+            padding: 20px;
+            background: white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            font-family: 'Courier New', monospace;
+            border-radius: 8px;
+        }
+
+        /* Receipt Header */
+        .receipt-header {
+            text-align: center;
+            margin-bottom: 15px;
+            border-bottom: 1px dashed #000;
+            padding-bottom: 15px;
+        }
+
+        .receipt-header h1 {
+            font-size: 24px;
+            margin: 0 0 10px 0;
+            color: #2c3e50;
+            font-weight: bold;
+        }
+
+        .receipt-header p {
+            margin: 5px 0;
+            font-size: 14px;
+            color: #555;
+        }
+        
+        /* Receipt Details */
+        .receipt-details {
+            margin-bottom: 20px;
+            padding: 10px 0;
+            border-bottom: 1px dashed #000;
+        }
+
+        .receipt-details p {
+            margin: 5px 0;
+            font-size: 14px;
+            color: #333;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        /* Items Table */
+        .items-table {
+            width: 100%;
+            margin: 15px 0;
+            border-collapse: collapse;
+        }
+
+        .items-table th {
+            text-align: left;
+            padding: 8px 4px;
+            border-bottom: 1px dashed #000;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .items-table td {
+            padding: 8px 4px;
+            border-bottom: 1px dotted #ddd;
+            font-size: 14px;
+        }
+
+        .items-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Price Columns */
+        .items-table .price-col, 
+        .items-table .amount-col {
+            text-align: right;
+        }
+
+        .items-table .qty-col {
+            text-align: center;
+        }
+
+        /* Total Section */
+        .total-section {
+            margin-top: 15px;
+            padding-top: 10px;
+            border-top: 1px dashed #000;
+            font-weight: bold;
+        }
+
+        .total-section p {
+            display: flex;
+            justify-content: space-between;
+            margin: 5px 0;
+            font-size: 14px;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px dashed #000;
+        }
+
+        .footer p {
+            margin: 5px 0;
+            font-size: 12px;
+            color: #666;
+        }
+
+        /* Print Button */
+        .print-btn {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            background-color: #2c3e50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 20px;
+            font-size: 16px;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+
+        .print-btn:hover {
+            background-color: #34495e;
+        }
+
+        /* Print Media Styles */
+        @media print {
+            body {
+                background: none;
+            }
+            .nav-bar, .print-btn {
+                display: none;
+            }
+            .receipt-container {
+                box-shadow: none;
+                margin: 0;
+                padding: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="nav-bar">
+        <div class="navs">
+            <img src="/img/mian-pos.png" alt="">
+            <p>Sinat Store</p>
+        </div>
+        <li><a href="/"><i class="ri-home-4-line"></i>Dashboard</a></li>
+        <li><a href="{{ url_for('product_list') }}" id="text"><i class="ri-align-justify"></i>Category</a></li>
+        <li><a href="" id="text1"><i class="ri-book-2-line"></i>Sale Process</a></li>
+        <li><a href="{{ url_for('create_receipt') }}"><i class="ri-search-line"></i>Receipt</a></li>
+        <li><a href="{{ url_for('add_product') }}"><i class="ri-functions"></i>Add Product</a></li>
+    </nav>
+
+    <div class="receipt-container">
+        <div class="receipt-header">
+            <h1>Sinat Store</h1>
+            <p>123 Main Street, Phnom Penh</p>
+            <p>Tel: 012-345-678</p>
+        </div>
+
+        <div class="receipt-details">
+            <p><span>Receipt #:</span> <span>{{ receipt_number }}</span></p>
+            <p><span>Date:</span> <span>{{ date }}</span></p>
+            <p><span>Time:</span> <span>{{ time }}</span></p>
+            <p><span>Cashier:</span> <span>{{ cashier_name }}</span></p>
+        </div>
+
+        <table class="items-table">
+            <thead>
+                <tr>
+                    <th style="width: 40%">Item</th>
+                    <th style="width: 15%" class="qty-col">Qty</th>
+                    <th style="width: 20%" class="price-col">Price</th>
+                    <th style="width: 25%" class="amount-col">Amount</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in items %}
+                <tr>
+                    <td>{{ item[0] }}</td>
+                    <td class="qty-col">{{ item[1] }}</td>
+                    <td class="price-col">${{ "%.2f"|format(item[2]) }}</td>
+                    <td class="amount-col">${{ "%.2f"|format(item[3]) }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="total-section">
+            <p>
+                <span>Subtotal:</span>
+                <span>${{ "%.2f"|format(total) }}</span>
+            </p>
+            <p>
+                <span>Tax (10%):</span>
+                <span>${{ "%.2f"|format(total * 0.1) }}</span>
+            </p>
+            <p style="font-size: 18px; margin-top: 10px;">
+                <span>TOTAL:</span>
+                <span>${{ "%.2f"|format(total * 1.1) }}</span>
+            </p>
+        </div>
+
+        <div class="footer">
+            <p style="font-size: 14px; margin-bottom: 10px;">Thank you for shopping with us!</p>
+            <p>We appreciate your business</p>
+            <p>Please come again</p>
+            <p style="margin-top: 15px; font-size: 11px;">Keep this receipt for any returns or exchanges</p>
+            <p style="font-size: 11px;">Items can be returned within 7 days with receipt</p>
+        </div>
+
+        <button class="print-btn" onclick="window.print()">
+            <i class="ri-printer-line" style="margin-right: 8px;"></i>Print Receipt
+        </button>
+    </div>
+
+    <script>
+        // Auto-print when viewing a receipt
+        if (window.location.pathname.includes('/receipt/')) {
+            window.onload = function() {
+                // Small delay to ensure everything is loaded
+                setTimeout(function() {
+                    window.print();
+                }, 500);
+            }
+        }
+    </script>
+</body>
+</html>
+
+        <table class="items-table">
+            <thead>
+                <tr>
+                    <th>Item</th>
+                    <th>Qty</th>
+                    <th>Price</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in items %}
+                <tr>
+                    <td>{{ item.name }}</td>
+                    <td>{{ item.quantity }}</td>
+                    <td>${{ "%.2f"|format(item.price) }}</td>
+                    <td>${{ "%.2f"|format(item.quantity * item.price) }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="total-section">
+            <p>
+                <span>Subtotal:</span>
+                <span>${{ "%.2f"|format(subtotal) }}</span>
+            </p>
+            <p>
+                <span>Tax (10%):</span>
+                <span>${{ "%.2f"|format(tax) }}</span>
+            </p>
+            <p style="font-weight: bold; font-size: 1.2em;">
+                <span>Total:</span>
+                <span>${{ "%.2f"|format(total) }}</span>
+            </p>
+            <p>
+                <span>Payment Method:</span>
+                <span>{{ payment_method }}</span>
+            </p>
+            <p>
+                <span>Amount Paid:</span>
+                <span>${{ "%.2f"|format(amount_paid) }}</span>
+            </p>
+            <p>
+                <span>Change:</span>
+                <span>${{ "%.2f"|format(change) }}</span>
+            </p>
+        </div>
+
+        <div class="footer">
+            <p>Thank you for shopping with us!</p>
+            <p>Please come again</p>
+            <p>-- End of Receipt --</p>
+        </div>
+
+        <div class="no-print" style="text-align: center; margin-top: 20px;">
+            <button onclick="window.print()" style="padding: 10px 20px; background: purple; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                Print Receipt
+            </button>
+        </div>
+    </div>
+</body>
+</html>
