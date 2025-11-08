@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>POS SYSTEM</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.7.0/fonts/remixicon.css" rel="stylesheet" />
+</head>
+
+<body class="category-page">
+    <nav class="nav-bar">
+        <div class="navs">
+            <img src="{{ url_for('product.serve_img', filename='mian-pos.png') }}" alt="Sinat Store">
+            <p>Sinat Store</p>
+        </div>
+
+        <ul>
+            <li><a href="/"><i class="ri-home-4-line"></i> Dashboard</a></li>
+            <li><a href="{{ url_for('product.product_list') }}" id="text"><i class="ri-align-justify"></i> Category</a>
+            </li>
+            <li><a href="{{ url_for('product.sale') }}" id="text1"><i class="ri-book-2-line"></i> Sale Process</a></li>
+            <li><a href="{{ url_for('receipt.final_receipt') }}"><i class="ri-search-line"></i> Receipt</a></li>
+            <li><a href="{{ url_for('product.add_product') }}"><i class="ri-functions"></i> Add Product</a></li>
+
+        </ul>
+    </nav>
+
+    <div class="content">
+        <div class="card">
+            <!-- Search Form (top, centered) -->
+            <form action="{{ url_for('product.product_list') }}" method="get" class="search-form">
+                <input type="text" name="search" placeholder="Search by name or category"
+                    value="" class="search-input">
+                <button type="submit" class="search-btn">Search</button>
+            </form>
+            <a class="download" href="{{ url_for('product.product_list', download='excel') }}">Download Excel</a>
+
+            <h2 class="category-title">Category List</h2>
+
+            <p class="add-product">
+                <a href="{{ url_for('product.add_product') }}" class="btn">Add Product</a>
+            </p>
+
+            <!-- Product Table (always rendered) -->
+            <table class="category-table">
+                <thead>
+                    <tr>
+                        <th>NB.</th>
+                        <th>NAME</th>
+                        <th>PRICE</th>
+                        <th>CREATE DATE</th>
+                        <th>ACTION</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if products and products|length > 0 %}
+                        {% for p in products %}
+                        <tr>
+                            <td>{{ loop.index }}</td>
+                            <td>{{ p[1] }}</td>
+                            <td>${{ "%.2f"|format(p[2]) }}</td>
+                            <td>{{ p[3] }}</td>
+                            <td class="actions">
+                                <a href="{{ url_for('product.edit_product', product_id=p[0]) }}" class="action-edit">Edit</a>
+                                <a href="{{ url_for('product.delete_product', product_id=p[0]) }}" class="action-delete" onclick="return confirm('Delete {{ p[1] }}?');">Delete</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="5" class="no-products">No products found. <a href="{{ url_for('product.add_product') }}">Add one now</a>.</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+
+</html>

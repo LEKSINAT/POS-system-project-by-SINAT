@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>POS SYSTEM</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.7.0/fonts/remixicon.css" rel="stylesheet" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/create_receipt.css') }}">
+    <style>
+        .content {
+            padding: 20px;
+        }
+        
+        .cart-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 15px;
+            background-color: white;
+        }
+        
+        .cart-container h2 {
+            color: #2c3e50;
+            font-size: 24px;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #eee;
+        }
+        
+        .cashier-info {
+            margin-bottom: 20px;
+        }
+        
+        .cashier-info label {
+            margin-right: 10px;
+        }
+        
+        .cashier-info input {
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            width: 180px;
+        }
+        
+        h3 {
+            color: #2c3e50;
+            margin: 25px 0 15px;
+            font-size: 20px;
+        }
+        
+        .product-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 15px 0;
+        }
+        .product-item {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 10px;
+            cursor: pointer;
+            text-align: center;
+        }
+        
+        .product-item:hover {
+            background-color: #e9ecef;
+        }
+        
+        .product-item h4 {
+            margin: 5px 0;
+            font-size: 16px;
+            color: #333;
+        }
+        
+        .product-item p {
+            margin: 5px 0;
+            color: #6c757d;
+        }
+        
+        .cart-items {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        .cart-items th {
+            background-color: #2c3e50;
+            color: white;
+            padding: 15px;
+            text-align: left;
+        }
+        
+        .cart-items td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .cart-items tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .cart-items input[type="number"] {
+            width: 60px;
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+        }
+        
+        .total {
+            margin: 20px 0;
+            text-align: right;
+            font-size: 1.2em;
+            color: #333;
+        }
+        
+        .btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        
+        .btn.remove {
+            background-color: #dc3545;
+            color: white;
+        }
+        
+        .btn.remove:hover {
+            opacity: 0.9;
+        }
+        
+        button[type="submit"] {
+            background-color: #28a745;
+            color: white;
+            padding: 10px 20px;
+            margin-top: 15px;
+            width: 100%;
+        }
+        
+        button[type="submit"]:hover {
+            opacity: 0.9;
+        }
+
+        /* Product Item Styles */
+        .product-item {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 180px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .product-item h4 {
+            font-size: 20px;
+            margin-bottom: 15px;
+            color: #2c3e50;
+        }
+
+        .price-tag {
+            font-size: 32px;
+            color: #28a745;
+            font-weight: bold;
+            margin: 20px 0;
+            text-shadow: 1px 1px 0 rgba(0,0,0,0.1);
+            position: relative;
+            display: inline-block;
+        }
+
+        .price-tag::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: -20px;
+            right: -20px;
+            height: 1px;
+            background: #eee;
+            z-index: 0;
+        }
+
+        .price-tag span {
+            position: relative;
+            background: white;
+            padding: 0 15px;
+            z-index: 1;
+        }
+
+        .stock-info {
+            color: #6c757d;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+            font-size: 18px;
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 8px;
+        }
+
+        .stock-number {
+            font-weight: bold;
+            color: #2c3e50;
+            font-size: 20px;
+        }
+
+        .ri-stock-line {
+            color: #4CAF50;
+            font-size: 20px;
+        }
+
+        .product-content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 20px 0;
+        }
+
+        .add-to-cart {
+            background: #2c3e50;
+            color: white;
+            padding: 15px;
+            border-radius: 0 0 10px 10px;
+            margin: 20px -30px -30px -30px;
+            transition: all 0.3s ease;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .product-item:hover .add-to-cart {
+            background: #4CAF50;
+            padding-top: 20px;
+            padding-bottom: 20px;
+        }
+
+        /* Container and heading adjustments */
+        .cart-container {
+            margin: 30px auto;
+            padding: 40px;
+            background: linear-gradient(to bottom, #ffffff, #f8f9fa);
+        }
+
+        .cart-container h2 {
+            text-align: center;
+            font-size: 32px;
+            margin-bottom: 40px;
+            color: #2c3e50;
+            position: relative;
+        }
+
+        .cart-container h2:after {
+            content: '';
+            display: block;
+            width: 60px;
+            height: 4px;
+            background: #4CAF50;
+            margin: 15px auto 0;
+            border-radius: 2px;
+        }
+
+        /* Available Products section */
+        h3 {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            font-size: 24px;
+            margin: 40px 0 20px;
+            color: #2c3e50;
+        }
+
+        h3 i {
+            color: #4CAF50;
+            font-size: 28px;
+        }
+
+        /* Cashier section */
+        .cashier-info {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            margin: 0 auto 40px;
+            text-align: center;
+        }
+
+        .cashier-info label {
+            display: block;
+            margin-bottom: 10px;
+            font-size: 18px;
+            color: #2c3e50;
+        }
+
+        .cashier-info input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e1e1e1;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        .cashier-info input:focus {
+            outline: none;
+            border-color: #4CAF50;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 1400px) {
+.product-list {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* 3 cards per row */
+    gap: 20px; /* space between cards */
+    padding: 20px;
+}
+
+.product-item {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    padding: 16px;
+    text-align: center;
+    transition: transform 0.2s ease;
+}
+
+.product-item:hover {
+    transform: translateY(-5px);
+}
+
+.price-tag {
+    color: #2e7d32;
+    font-weight: bold;
+    margin: 8px 0;
+}
+
+.stock-info {
+    font-size: 14px;
+    color: #555;
+}
+
+.add-to-cart {
+    margin-top: 10px;
+    background: #007bff;
+    color: white;
+    padding: 8px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.add-to-cart:hover {
+    background: #0056b3;
+}
+
+        }
+
+        @media (max-width: 1200px) {
+            .product-list {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            .cart-container {
+                max-width: 1000px;
+            }
+        }
+
+        @media (max-width: 992px) {
+            .product-list {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            .cart-container {
+                max-width: 800px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .product-list {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 15px;
+                padding: 15px;
+            }
+            .product-item {
+                height: 200px;
+                padding: 15px;
+            }
+            .price-tag {
+                font-size: 24px;
+            }
+            h4 {
+                font-size: 18px !important;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .product-list {
+                grid-template-columns: repeat(1, 1fr);
+            }
+            .product-item {
+                height: 180px;
+            }
+        }
+
+        /* Content spacing fixes */
+        .cart-container {
+            max-width: 1400px;
+            width: 95%;
+            margin: 0 auto;
+        }
+
+        h3 {
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .cashier-info {
+            max-width: 400px;
+        }
+
+        /* Cart Styles */
+        .cart-items th {
+            font-size: 15px;
+        }
+
+        .cart-items td {
+            vertical-align: middle;
+        }
+
+        /* Total Section */
+        .total {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 30px;
+        }
+
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .total-row:last-child {
+            border-bottom: none;
+        }
+
+        .grand-total {
+            font-size: 1.25em;
+            font-weight: bold;
+            color: #2c3e50;
+            padding-top: 15px;
+            margin-top: 10px;
+            border-top: 2px solid #dee2e6;
+        }
+
+        /* Icons */
+        .ri-shopping-cart-2-line,
+        .ri-shopping-basket-2-line,
+        .ri-bill-line {
+            margin-right: 8px;
+        }
+
+        /* Create Receipt Button */
+        .create-receipt {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            font-size: 18px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Responsive Design */
+        /* @media (max-width: 768px) {
+            .product-list {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            }
+
+            .cart-items {
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+        } */
+    
+    
+    </style>
+</head>
+<body>
+    <nav class="nav-bar">
+        <div class="navs">
+            <img src="{{ url_for('product.serve_img', filename='mian-pos.png') }}" alt="">
+
+            <p>Sinat Store</p>
+        </div>
+        <li><a href="/"><i class="ri-home-4-line"></i>Dashboard</a></li>
+        <li><a href="{{ url_for('product.product_list') }}" id="text"><i class="ri-align-justify"></i>Category</a></li>
+
+        <li><a href="" id="text1"><i class="ri-book-2-line"></i>Sale Process</a></li>
+        <li><a href="{{ url_for('receipt.final_receipt') }}"><i class="ri-search-line"></i>Receipt</a></li>
+        <li><a href="{{ url_for('product.add_product') }}"><i class="ri-functions"></i>Add Product</a></li>
+    </nav>
+
+    <div class="create-receipt"><div class="content">
+        <div class="cart-container">
+            <h2>Create New Receipt</h2>
+            
+            <form id="receiptForm" method="POST">
+                <div class="cashier-info">
+                    <label for="cashier_name">Cashier Name:</label>
+                    <input type="text" id="cashier_name" name="cashier_name" required 
+                           placeholder="Enter cashier name">
+                </div>
+
+                <h3><i class="ri-shopping-basket-2-line"></i> Available Products</h3>
+                <div class="product-list">
+                    {% for product in products %}
+                    <div class="product-item" data-name="{{ product[0] }}" data-price="{{ product[1] }}" data-stock="{{ product[2] }}">
+                        <h4>{{ product[0] }}</h4>
+                        <div class="price-tag"><span>${{ "%.2f"|format(product[1]) }}</span></div>
+                        <p class="stock-info"><i class="ri-stock-line"></i> Available: <span class="stock-number">{{ product[2] }}</span></p>
+                        <div class="add-to-cart"><i class="ri-shopping-cart-2-line"></i> Click to add to cart</div>
+                    </div>
+                    {% endfor %}    
+                </div>
+
+                <h3><i class="ri-shopping-cart-2-line"></i> Shopping Cart</h3>
+                <table class="cart-items" id="cartItems">
+                    <thead>
+                        <tr>
+                            <th style="width: 40%">Product</th>
+                            <th style="width: 15%">Price</th>
+                            <th style="width: 20%">Quantity</th>
+                            <th style="width: 15%">Amount</th>
+                            <th style="width: 10%">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+
+                <div class="total">
+                    <div class="total-row">
+                        <span>Subtotal:</span>
+                        <span>$<span id="cartSubtotal">0.00</span></span>
+                    </div>
+                    <div class="total-row">
+                        <span>Tax (10%):</span>
+                        <span>$<span id="cartTax">0.00</span></span>
+                    </div>
+                    <div class="total-row grand-total">
+                        <span>Total:</span>
+                        <span>$<span id="cartTotal">0.00</span></span>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn create-receipt">
+                    <i class="ri-bill-line"></i> Create Receipt
+                </button>
+            </form>
+        </div>
+    </div>
+    </div>
+
+    <script>
+        let cart = [];
+        const TAX_RATE = 0.10; // 10% tax rate
+        
+        function addToCart(name, price, maxStock) {
+            const existingItem = cart.find(item => item.name === name);
+            
+            if (existingItem) {
+                if (existingItem.quantity < maxStock) {
+                    existingItem.quantity++;
+                    existingItem.amount = existingItem.quantity * existingItem.price;
+                } else {
+                    showNotification('Not enough stock!', 'error');
+                    return;
+                }
+            } else {
+                cart.push({
+                    name: name,
+                    price: price,
+                    quantity: 1,
+                    amount: price,
+                    maxStock: maxStock
+                });
+                showNotification(`${name} added to cart`, 'success');
+            }
+            
+            updateCartDisplay();
+        }
+        
+        function removeFromCart(index) {
+            const item = cart[index];
+            cart.splice(index, 1);
+            showNotification(`${item.name} removed from cart`, 'info');
+            updateCartDisplay();
+        }
+        
+        function showNotification(message, type) {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.classList.add('fade-out');
+                setTimeout(() => notification.remove(), 500);
+            }, 2000);
+        }
+        
+        function updateCartDisplay() {
+            const tbody = document.querySelector('#cartItems tbody');
+            tbody.innerHTML = '';
+            
+            let subtotal = 0;
+            
+            cart.forEach((item, index) => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>
+                        ${item.name}
+                        <input type="hidden" name="items[]" value="${item.name}">
+                    </td>
+                    <td class="price-col">
+                        $${item.price.toFixed(2)}
+                        <input type="hidden" name="prices[]" value="${item.price}">
+                    </td>
+                    <td class="qty-col">
+                        <input type="number" name="quantities[]" value="${item.quantity}" 
+                               min="1" max="${item.maxStock}" 
+                               onchange="updateQuantity(${index}, this.value)">
+                    </td>
+                    <td class="amount-col">$${item.amount.toFixed(2)}</td>
+                    <td>
+                        <button type="button" class="btn remove" onclick="removeFromCart(${index})">
+                            <i class="ri-delete-bin-line"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+                
+                subtotal += item.amount;
+            });
+            
+            // Update totals
+            const tax = subtotal * TAX_RATE;
+            const total = subtotal + tax;
+            
+            document.getElementById('cartSubtotal').textContent = subtotal.toFixed(2);
+            document.getElementById('cartTax').textContent = tax.toFixed(2);
+            document.getElementById('cartTotal').textContent = total.toFixed(2);
+            
+            // Update submit button state
+            const submitBtn = document.querySelector('button[type="submit"]');
+            submitBtn.disabled = cart.length === 0;
+            submitBtn.style.opacity = cart.length === 0 ? '0.5' : '1';
+        }
+        
+        function updateQuantity(index, newQuantity) {
+            const item = cart[index];
+            const qty = parseInt(newQuantity);
+            
+            if (qty > item.maxStock) {
+                showNotification('Not enough stock!', 'error');
+                return;
+            }
+            
+            item.quantity = qty;
+            item.amount = item.quantity * item.price;
+            updateCartDisplay();
+        }
+
+        // Attach click handlers for product cards (uses data- attributes to avoid inline templated JS)
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelectorAll('.create-receipt .product-item').forEach(function (el) {
+                el.addEventListener('click', function () {
+                    const name = this.dataset.name;
+                    const price = parseFloat(this.dataset.price);
+                    const stock = parseInt(this.dataset.stock, 10);
+                    addToCart(name, price, stock);
+                });
+            });
+        });
+
+        // Add notification styles
+        const style = document.createElement('style');
+        style.textContent = `
+            .notification {
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 15px 25px;
+                border-radius: 4px;
+                color: white;
+                font-weight: bold;
+                z-index: 1000;
+                animation: slideIn 0.3s ease;
+            }
+            
+            .notification.success { background-color: #28a745; }
+            .notification.error { background-color: #dc3545; }
+            .notification.info { background-color: #17a2b8; }
+            
+            .notification.fade-out {
+                animation: fadeOut 0.5s ease forwards;
+            }
+            
+            @keyframes slideIn {
+                from { transform: translateX(100%); }
+                to { transform: translateX(0); }
+            }
+            
+            @keyframes fadeOut {
+                to { opacity: 0; }
+            }
+            
+            .price-col, .amount-col { text-align: right; }
+            .qty-col { text-align: center; }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>

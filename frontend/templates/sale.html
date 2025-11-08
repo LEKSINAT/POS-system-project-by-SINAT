@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sale Process</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.7.0/fonts/remixicon.css" rel="stylesheet" />
+    <style>
+        /* Scope everything under .sale-page to avoid affecting other pages */
+        .sale-page { display:flex; width:100%; }
+        .sale-page .sale-wrap { padding: 24px; flex: 1 1 0; min-width:0; width: 100%; max-width: 1500px; margin: 0 auto; }
+        .sale-page .sale-header { display:flex; align-items:center; gap:10px; margin-bottom:18px; }
+        .sale-page .sale-header h2 { font-size: 24px; font-weight: 700; color:#1f2937; }
+
+        .sale-page .card-grid {
+            display:grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap:24px;
+            align-items: stretch;
+        }
+
+        .sale-page .p-card {
+            background:#fff;
+            border-radius:14px;
+            box-shadow:0 10px 24px rgba(0,0,0,.06);
+            overflow:hidden;
+            border:1px solid #eef2f7;
+            display:flex;
+            flex-direction:column;
+            transition: transform .18s ease, box-shadow .18s ease;
+        }
+
+        .sale-page .p-card:hover { transform: translateY(-3px); box-shadow:0 14px 30px rgba(0,0,0,.08); }
+
+        .sale-page .p-img-wrap { background:#f8fafc; }
+        .sale-page .p-card img { width:100%; height:210px; object-fit:cover; display:block; }
+
+        .sale-page .p-body { padding:18px; }
+        .sale-page .p-title { font-weight:700; color:#111827; margin:0 0 6px; font-size:18px; }
+        .sale-page .p-desc { color:#4b5563; font-size:14px; line-height:1.5; margin:0 0 12px; min-height:40px; }
+        .sale-page .p-price { color:#176c2f; font-weight:800; letter-spacing:0.2px; }
+        .sale-page .p-stars { color:#f4b400; margin:8px 0 0; font-size:16px; }
+
+        .sale-page .p-footer {
+            padding:12px 16px;
+            background:#f5f7fb;
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            border-top:1px solid #eef2f7;
+        }
+
+        .sale-page .stock { color:#6b7280; font-size:13px; }
+        .sale-page .btn-order { background:#2563eb; color:#fff; border:none; padding:10px 14px; border-radius:8px; cursor:pointer; text-decoration:none; display:inline-flex; align-items:center; gap:6px; font-weight:600; }
+        .sale-page .btn-order:hover { background:#1d4ed8; }
+
+        /* Responsive */
+        @media (max-width: 1200px) { .sale-page .card-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 700px)  { .sale-page .card-grid { grid-template-columns: 1fr; } }
+
+        /* Override global generic rules so they don't affect this page */
+        .sale-page .sale-wrap div:nth-child(n) { grid-area: auto !important; }
+        .sale-page p { padding-left: 0 !important; }
+        .sale-page img { display:block; }
+    </style>
+</head>
+<body class="sale-page">
+    <nav class="nav-bar">
+        <div class="navs">
+            <img src="{{ url_for('product.serve_img', filename='mian-pos.png') }}" alt="">
+            <p>Sinat Store</p>
+        </div>
+        <li><a href="/"><i class="ri-home-4-line"></i> Dashboard</a></li>
+        <li><a href="{{ url_for('product.product_list') }}" id="text"><i class="ri-align-justify"></i> Category</a></li>
+        <li><a href="{{ url_for('product.sale') }}" id="text1"><i class="ri-book-2-line"></i> Sale Process</a></li>
+        <li><a href="{{ url_for('receipt.final_receipt') }}"><i class="ri-search-line"></i> Receipt</a></li>
+        <li><a href="{{ url_for('product.add_product') }}"><i class="ri-functions"></i> Add Product</a></li>
+    </nav>
+
+    <div class="sale-wrap">
+        <div class="sale-header">
+            <h2 style="margin:0;">Sale Process</h2>
+        </div>
+
+        <div class="card-grid">
+            {% set images = [
+                'https://images.unsplash.com/photo-1542444459-db63c4b90d39?q=80&w=1200&auto=format&fit=crop',
+                'https://images.unsplash.com/photo-1497534446932-c925b458314e?q=80&w=1200&auto=format&fit=crop',
+                'https://images.unsplash.com/photo-1541976076758-347942db1976?q=80&w=1200&auto=format&fit=crop'
+            ] %}
+            {% for p in products %}
+            {% set name = (p[1] or '')|lower|trim %}
+            {% set n = name|replace(' ', '')|replace('-', '') %}
+            {% set src = images[loop.index0 % images|length] %}
+            {% if 'banana' in n %}
+                {% set src = url_for('product.serve_img', filename='banana.png') %}
+            {% elif 'orange' in n %}
+                {% set src = url_for('product.serve_img', filename='orange.png') %}
+            {% elif 'mango' in n %}
+                {% set src = url_for('product.serve_img', filename='mango.png') %}
+            {% elif 'grape' in n %}
+                {% set src = url_for('product.serve_img', filename='grape.png') %}
+            {% elif 'pineapple' in n %}
+                {% set src = url_for('product.serve_img', filename='pineapple.png') %}
+            {% elif 'watermelon' in n %}
+                {% set src = url_for('product.serve_img', filename='watermelon.png') %}
+            {% elif 'strawberry' in n %}
+                {% set src = url_for('product.serve_img', filename='strawberry.png') %}
+            {% elif 'blueberry' in n %}
+                {% set src = url_for('product.serve_img', filename='blueberry.png') %}
+            {% elif 'papaya' in n %}
+                {% set src = url_for('product.serve_img', filename='papaya.png') %}
+            {% elif 'kiwi' in n %}  
+                {% set src = url_for('product.serve_img', filename='kiwi.png') %}
+            {% elif 'coconut' in n %}
+                {% set src = url_for('product.serve_img', filename='image.png') %}
+            {% endif %}
+            <div class="p-card">
+                <div class="p-img-wrap">
+                    {% set fallback = images[loop.index0 % images|length] %}
+                    {% set alt_url = '' %}
+                    {% if 'papaya' in n %}
+                        {% set alt_url = url_for('product.serve_img', filename='papaya.png') %}
+                    {% elif 'kiwi' in n %}
+                        {% set alt_url = url_for('product.serve_img', filename='kiwi.png') %}
+                    {% elif 'coconut' in n %}
+                        {% set alt_url = url_for('product.serve_img', filename='coconut.jpg') %}
+                    {% endif %}
+                    <img src="{{ src }}" alt="{{ p[1] }}" loading="lazy" data-alt="{{ alt_url }}"
+                         onerror="if(this.dataset.alt && !this.dataset.tried){this.dataset.tried=1; this.src=this.dataset.alt;} else { this.onerror=null; this.src='{{ fallback }}'; }">
+                </div>
+                <div class="p-body">
+
+                    <h3 class="p-title">{{ p[1] }}</h3>
+                    <p class="p-desc">Lorem ipsum dolor sit amet consectetur adipisicing elit. Atque natus.</p>
+                    <div class="p-price">Price: ${{ '%.2f'|format(p[2]) }}</div>
+                    <div class="p-stars">
+                        <i class="ri-star-fill"></i>
+                        <i class="ri-star-fill"></i>
+                        <i class="ri-star-fill"></i>
+                        <i class="ri-star-fill"></i>
+                        <i class="ri-star-line"></i>
+                    </div>
+                </div>
+                <div class="p-footer">
+                    <span class="stock">In stock: {{ p[3] }}</span>
+                    <a class="btn-order" href="{{ url_for('receipt.final_receipt') }}">
+                        <i class="ri-shopping-bag-3-line"></i> Order Now
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</body>
+</html>

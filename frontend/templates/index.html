@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>POS SYSTEM</title>
+    <link rel="stylesheet" href="../static/style.css">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.7.0/fonts/remixicon.css" rel="stylesheet" />
+</head>
+
+<body>
+    <nav class="nav-bar">
+        <div class="navs">
+            <img src="{{ url_for('product.serve_img', filename='mian-pos.png') }}" alt="">
+            <p>Sinat Store</p>
+        </div>
+        <li><a href="/"><i class="ri-home-4-line"></i> Dashboard</a></li>
+        <li><a href="{{ url_for('product.product_list') }}" id="text"><i class="ri-align-justify"></i> Category</a></li>
+        <li><a href="#" id="text1"><i class="ri-book-2-line"></i> Sale Process</a></li>
+        <li><a href="{{ url_for('receipt.final_receipt') }}"><i class="ri-search-line"></i> Receipt</a></li>
+        <li><a href="{{ url_for('product.add_product') }}"><i class="ri-functions"></i> Add Product</a></li>
+    </nav>
+    <section>
+        <div class="box">
+            <p>PRODUCT (OUT OF STOCK)</p>
+            <h3>Item:1<i class="ri-store-3-line"></i></h3>
+
+        </div>
+        <div class="box">
+            <p class="style" style="color:black;">CATEGORY (COUNT)</p>
+            <h3>Item:3<i class="ri-list-unordered"></i></h3>
+        </div>
+
+        <div class="box">
+            <p class="style1" style="color:black;">PAYMENT TYPE</p>
+            <h3>Item:2<i class="ri-visa-line"></i></h3>
+        </div>
+        <div class="box">
+            <p class="style2" style="color:black;">ADMIN ACCOUNT</p>
+            <h3>Item:3<i class="ri-account-box-line"></i></h3>
+        </div>
+        <div class="box">
+            <p>PLANDING REQUESTS</p>
+            <h3>0<i class="ri-message-3-line"></i></i></h3>
+        </div>
+        <div class="box">
+            <p class="style" style="color: black;">TOTAL(SALE)</p>
+            <h3>55600<i class="ri-exchange-dollar-fill"></i></h3>
+        </div>
+
+        <div class="box">
+            <p class="style1" style="color: black;">REQUEST SUCCESS</p>
+            <h3>0<i class="ri-verified-badge-line"></i></h3>
+        </div>
+        <div class="box">
+            <p class="style2" style="color:black;">CUSTOMER ACCOUNT</p>
+            <h3>2<i class="ri-group-line"></i></h3>
+        </div>
+
+        <div class="body">
+            <div class="container">
+                <h1>📊 Admin Dashboard</h1>
+
+                <div class="cards">
+                    <div class="card">
+                        <h2>{{ total_products }}</h2>
+                        <p>Total Products</p>
+                    </div>
+                    <div class="card">
+                        <h2>{{ total_stock }}</h2>
+                        <p>Total Stock</p>
+                    </div>
+                    <div class="card">
+                        <h2>{{ total_messages }}</h2>
+                        <p>Total Chat Messages</p>
+                    </div>
+                </div>
+
+                <div class="links">
+                    <a href="{{ url_for('product.product_list') }}">Manage Products</a>
+                    <a href="/chat">Go to Chat</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+</body>
+
+</html>
