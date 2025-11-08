@@ -121,6 +121,4 @@ Images are referenced via `url_for('product.serve_img', filename=...)` from `fro
 - **Pagination** and richer search/filtering for products.
 - **User accounts** with roles and secure authentication.
 
-## License
-MIT or your preferred license.
 
